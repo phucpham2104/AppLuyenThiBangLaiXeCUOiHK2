@@ -7,8 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.phuc.edu.banglaixe.adapter.ChapterAdapter;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -7,7 +7,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.phuc.edu.banglaixe.model.Question;
 
 import java.util.List;
 

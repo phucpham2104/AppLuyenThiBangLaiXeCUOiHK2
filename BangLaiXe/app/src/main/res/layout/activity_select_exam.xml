@@ -45,15 +45,17 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:src="@drawable/ic_shuffle_green"/>
+
                 <TextView
                     android:text="NGẪU NHIÊN"
                     android:textColor="#4CAF50"
                     android:textSize="14sp"
-                    android:paddingTop="4dp"/>
+                    android:paddingTop="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
-            <!-- Các đề thi số 1-10 -->
-            <!-- Dùng include hoặc tạo động từ adapter nếu nhiều đề -->
+            <!-- Đề thi số 1 -->
             <LinearLayout
                 android:id="@+id/btnExam1"
                 android:orientation="vertical"
@@ -70,9 +72,12 @@
                 <TextView
                     android:text="Đề thi số 1"
                     android:textColor="#000000"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
+            <!-- Đề thi số 2 -->
             <LinearLayout
                 android:id="@+id/btnExam2"
                 android:orientation="vertical"
@@ -86,10 +91,12 @@
                 android:clickable="true"
                 android:focusable="true">
 
-                </TextView
+                <TextView
                     android:text="Đề thi số 2"
                     android:textColor="#000000"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
             <!-- Thêm các đề 3-10 tương tự -->

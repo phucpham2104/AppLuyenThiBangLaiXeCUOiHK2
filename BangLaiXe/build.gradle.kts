@@ -1,9 +1,11 @@
+
+
 plugins {
-    id("com.android.application")
+    id("com.android.application") version "8.1.1" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.10" apply false
     id("com.google.gms.google-services") version "4.4.4" apply false
 }
 
-dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:32.2.0"))
-    implementation("com.google.firebase:firebase-database-ktx")
+tasks.register("clean", Delete::class) {
+    delete(rootProject.buildDir)
 }

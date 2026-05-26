@@ -7,9 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.phuc.edu.banglaixe.model.Question;
-import com.phuc.edu.banglaixe.repository.QuestionRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 
