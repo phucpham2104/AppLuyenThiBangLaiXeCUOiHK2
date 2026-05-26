@@ -2,23 +2,44 @@ package phuc.edu.banglaixe;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.LinearLayout;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
+
+    private LinearLayout btnExam, btnReview, btn50Wrong, btnCritical;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.btnThiBoDe).setOnClickListener(v -> startActivity(new Intent(this, SelectExamActivity.class)));
-        findViewById(R.id.btnXemCauSai).setOnClickListener(v -> startActivity(new Intent(this, WrongQuestionsActivity.class)));
-        findViewById(R.id.btnOnTapCauHoi).setOnClickListener(v -> startActivity(new Intent(this, ReviewQuestionsActivity.class)));
-        findViewById(R.id.btnBienBao).setOnClickListener(v -> startActivity(new Intent(this, TrafficSignsActivity.class)));
-        findViewById(R.id.btn50CauSai).setOnClickListener(v -> startActivity(new Intent(this, TopWrongQuestionsActivity.class)));
-        findViewById(R.id.btn20CauDiemLiet).setOnClickListener(v -> startActivity(new Intent(this, CriticalQuestionsActivity.class)));
-        findViewById(R.id.btnMeoThi).setOnClickListener(v -> startActivity(new Intent(this, TipsActivity.class)));
-        findViewById(R.id.btnThaoLuan).setOnClickListener(v -> startActivity(new Intent(this, DiscussionActivity.class)));
+        btnExam = findViewById(R.id.btnExam);
+        btnReview = findViewById(R.id.btnReview);
+        btn50Wrong = findViewById(R.id.btn50Wrong);
+        btnCritical = findViewById(R.id.btnCritical);
+
+        btnExam.setOnClickListener(v -> {
+            Intent i = new Intent(MainActivity.this, SelectExamActivity.class);
+            i.putExtra("mode", "exam");
+            startActivity(i);
+        });
+
+        btnReview.setOnClickListener(v -> {
+            Intent i = new Intent(MainActivity.this, SelectExamActivity.class);
+            i.putExtra("mode", "review");
+            startActivity(i);
+        });
+
+        btn50Wrong.setOnClickListener(v -> {
+            Intent i = new Intent(MainActivity.this, WrongQuestionsActivity.class);
+            startActivity(i);
+        });
+
+        btnCritical.setOnClickListener(v -> {
+            Intent i = new Intent(MainActivity.this, CriticalQuestionsActivity.class);
+            startActivity(i);
+        });
     }
 }

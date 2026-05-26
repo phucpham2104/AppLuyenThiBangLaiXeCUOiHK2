@@ -5,32 +5,61 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Số câu -->
     <TextView
-        android:id="@+id/tvQuestion"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Câu hỏi"
+        android:id="@+id/txtQuestionIndex"
+        android:text="Đáp án câu 1/100"
         android:textSize="18sp"
-        android:padding="8dp"/>
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
-    <ImageView
-        android:id="@+id/ivQuestion"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:scaleType="fitCenter"
-        android:contentDescription="Hình minh họa"/>
-
-    <RadioGroup
-        android:id="@+id/optionsGroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="8dp"/>
-
+    <!-- Nút báo lỗi -->
     <Button
-        android:id="@+id/btnSubmit"
+        android:id="@+id/btnReport"
+        android:text="Báo lỗi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Câu hỏi -->
+    <TextView
+        android:id="@+id/txtQuestion"
+        android:text="Câu hỏi số 1"
+        android:textSize="16sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nộp bài"
-        android:layout_marginTop="16dp"/>
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"/>
+
+    <!-- RadioGroup chứa đáp án -->
+    <RadioGroup
+        android:id="@+id/rgOptions"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <!-- Nút chuyển câu -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingTop="16dp">
+
+        <Button
+            android:id="@+id/btnPrev"
+            android:text="‹"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnNext"
+            android:text="›"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 </LinearLayout>

@@ -1,91 +1,105 @@
 package phuc.edu.banglaixe;
 
 import android.os.Bundle;
-import android.widget.*;
-import androidx.appcompat.app.AlertDialog;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
+import com.phuc.edu.banglaixe.model.Question;
+import com.phuc.edu.banglaixe.repository.QuestionRepository;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class QuizActivity extends AppCompatActivity {
 
-    private List<Question> questions;
+    private TextView txtQuestionIndex, txtQuestion;
+    private Button btnReport, btnNext, btnPrev;
+    private RadioGroup rgOptions;
+
+    private List<Question> questions = new ArrayList<>();
     private int currentIndex = 0;
-    private int score = 0;
+    private String examId;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
-        String chapterId = getIntent().getStringExtra("chapterId");
-        loadQuestionsFromJSON(chapterId);
+        txtQuestionIndex = findViewById(R.id.txtQuestionIndex);
+        txtQuestion = findViewById(R.id.txtQuestion);
+        btnReport = findViewById(R.id.btnReport);
+        btnNext = findViewById(R.id.btnNext);
+        btnPrev = findViewById(R.id.btnPrev);
+        rgOptions = findViewById(R.id.rgOptions);
 
-        Button btnSubmit = findViewById(R.id.btnSubmit);
-        btnSubmit.setOnClickListener(v -> submitAnswer());
-    }
+        examId = getIntent().getStringExtra("examId");
 
-    private void loadQuestionsFromJSON(String chapterId){
-        try{
-            InputStream is = getAssets().open("50_cau_5chuong_docx_final.json");
-            Gson gson = new Gson();
-            Type type = new TypeToken<Map<String, Map<String, Question>>>(){}.getType();
-            Map<String, Map<String, Question>> allData = gson.fromJson(new InputStreamReader(is), type);
-            Map<String, Question> chapterQuestions = allData.get(chapterId);
-            questions = List.copyOf(chapterQuestions.values());
-            showQuestion();
-        }catch(Exception e){
-            e.printStackTrace();
-            Toast.makeText(this,"Không load được câu hỏi",Toast.LENGTH_SHORT).show();
-        }
-    }
+        loadQuestions();
 
-    private void showQuestion(){
-        if(currentIndex >= questions.size()) return;
+        btnNext.setOnClickListener(v -> {
+            saveAnswer();
+            if (currentIndex < questions.size() - 1) {
+                currentIndex++;
+                showQuestion();
+            }
+        });
 
-        Question q = questions.get(currentIndex);
-        TextView tvQ = findViewById(R.id.tvQuestion);
-        tvQ.setText(q.question);
+        btnPrev.setOnClickListener(v -> {
+            if (currentIndex > 0) {
+                currentIndex--;
+                showQuestion();
+            }
+        });
 
-        RadioGroup rg = findViewById(R.id.optionsGroup);
-        rg.removeAllViews();
-        for(String opt : q.options){
-            RadioButton rb = new RadioButton(this);
-            rb.setText(opt);
-            rg.addView(rb);
-        }
-
-        ImageView iv = findViewById(R.id.ivQuestion);
-        int resId = getResources().getIdentifier(q.image,"drawable",getPackageName());
-        if(resId != 0) iv.setImageResource(resId);
-        else iv.setImageResource(0);
-    }
-
-    private void submitAnswer(){
-        RadioGroup rg = findViewById(R.id.optionsGroup);
-        int checkedId = rg.getCheckedRadioButtonId();
-        if(checkedId != -1){
-            RadioButton rb = findViewById(checkedId);
+        btnReport.setOnClickListener(v -> {
             Question q = questions.get(currentIndex);
-            if(rb.getText().toString().equals(q.answer)) score++;
-            currentIndex++;
-            if(currentIndex < questions.size()) showQuestion();
-            else showResult();
-        }else{
-            Toast.makeText(this,"Chọn 1 đáp án",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Đã báo lỗi câu: " + q.id, Toast.LENGTH_SHORT).show();
+            // TODO: lưu báo lỗi vào Firebase nếu muốn
+        });
+    }
+
+    private void loadQuestions() {
+        new QuestionRepository().loadAllQuestions(new QuestionRepository.LoadCallback() {
+            @Override
+            public void onSuccess(List<Question> list) {
+                for (Question q : list) {
+                    if (examId.equals(q.examId)) {
+                        questions.add(q);
+                    }
+                }
+                if (!questions.isEmpty()) showQuestion();
+            }
+
+            @Override
+            public void onError(String message) {
+                Toast.makeText(QuizActivity.this, "Lỗi tải câu hỏi: " + message, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void showQuestion() {
+        Question q = questions.get(currentIndex);
+        txtQuestionIndex.setText("Đáp án câu " + (currentIndex + 1) + "/" + questions.size());
+        txtQuestion.setText(q.question);
+
+        rgOptions.removeAllViews();
+        for (int i = 0; i < q.options.length; i++) {
+            RadioButton rb = new RadioButton(this);
+            rb.setText(q.options[i]);
+            rb.setId(i);
+            rgOptions.addView(rb);
         }
     }
 
-    private void showResult(){
-        new AlertDialog.Builder(this)
-                .setTitle("Kết quả")
-                .setMessage("Bạn đúng "+score+"/"+questions.size()+" câu")
-                .setPositiveButton("OK",(d,w)->finish())
-                .show();
+    private void saveAnswer() {
+        int selectedId = rgOptions.getCheckedRadioButtonId();
+        if (selectedId != -1) {
+            Question q = questions.get(currentIndex);
+            if (selectedId != q.answer) {
+                // TODO: lưu câu sai để ôn tập
+            }
+        }
     }
 }
