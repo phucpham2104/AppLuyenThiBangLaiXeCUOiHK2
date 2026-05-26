@@ -48,9 +48,12 @@
                     android:src="@drawable/ic_exam"/>
 
                 <TextView
+                    android:id="@+id/txtExam"
                     android:text="Thi theo bộ đề"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:paddingTop="8dp"/>
             </LinearLayout>
 
@@ -73,9 +76,12 @@
                     android:src="@drawable/ic_review"/>
 
                 <TextView
+                    android:id="@+id/txtReview"
                     android:text="Ôn tập câu hỏi"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:paddingTop="8dp"/>
             </LinearLayout>
 
@@ -98,9 +104,12 @@
                     android:src="@drawable/ic_wrong"/>
 
                 <TextView
+                    android:id="@+id/txt50Wrong"
                     android:text="50 câu hay sai"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:paddingTop="8dp"/>
             </LinearLayout>
 
@@ -123,9 +132,12 @@
                     android:src="@drawable/ic_critical"/>
 
                 <TextView
+                    android:id="@+id/txtCritical"
                     android:text="20 câu điểm liệt"
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:paddingTop="8dp"/>
             </LinearLayout>
 

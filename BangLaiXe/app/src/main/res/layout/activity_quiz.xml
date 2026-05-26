@@ -1,56 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="16dp"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F5F5F5"
+    android:padding="16dp">
 
-    <!-- Số câu -->
-    <TextView
-        android:id="@+id/txtQuestionIndex"
-        android:text="Đáp án câu 1/100"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <!-- Nút báo lỗi -->
-    <Button
-        android:id="@+id/btnReport"
-        android:text="Báo lỗi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="8dp"/>
-
-    <!-- Câu hỏi -->
-    <TextView
-        android:id="@+id/txtQuestion"
-        android:text="Câu hỏi số 1"
-        android:textSize="16sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"/>
-
-    <!-- RadioGroup chứa đáp án -->
-    <RadioGroup
-        android:id="@+id/rgOptions"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <!-- Nút chuyển câu -->
+    <!-- Header -->
     <LinearLayout
+        android:id="@+id/layoutHeader"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/txtQuestionIndex"
+            android:text="1/25"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/txtTimer"
+            android:text="19:00"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"/>
+    </LinearLayout>
+
+    <!-- Scroll câu hỏi -->
+    <ScrollView
+        android:id="@+id/scrollQuestion"
+        android:layout_below="@id/layoutHeader"
+        android:layout_above="@id/layoutButtons"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="16dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+            <!-- Card câu hỏi -->
+            <LinearLayout
+                android:id="@+id/cardQuestion"
+                android:orientation="vertical"
+                android:background="@android:color/white"
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                android:layout_marginBottom="16dp"
+                android:clipToOutline="true"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@android:color/white"
+                android:theme="@style/ThemeOverlay.MaterialComponents.CardView">
+
+                <TextView
+                    android:id="@+id/txtQuestion"
+                    android:text="Câu hỏi số 1"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="16dp"/>
+
+                <RadioGroup
+                    android:id="@+id/rgOptions"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Nút chuyển câu dưới -->
+    <LinearLayout
+        android:id="@+id/layoutButtons"
         android:orientation="horizontal"
         android:gravity="center"
-        android:paddingTop="16dp">
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
 
         <Button
             android:id="@+id/btnPrev"
             android:text="‹"
+            android:background="@android:color/transparent"
+            android:textSize="24sp"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"/>
@@ -58,8 +104,11 @@
         <Button
             android:id="@+id/btnNext"
             android:text="›"
+            android:background="@android:color/transparent"
+            android:textSize="24sp"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"/>
     </LinearLayout>
-</LinearLayout>
+
+</RelativeLayout>
