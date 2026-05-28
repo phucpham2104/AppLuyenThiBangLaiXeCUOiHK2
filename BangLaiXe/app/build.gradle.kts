@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "phuc.edu.banglaixe" // bắt buộc
-    compileSdk = 35
+    namespace = "phuc.edu.banglaixe"
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "phuc.edu.banglaixe"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

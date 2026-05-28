@@ -61,7 +61,7 @@ public class WrongQuestionsListActivity extends AppCompatActivity {
 
                 WrongQuestionAdapter adapter = new WrongQuestionAdapter(WrongQuestionsListActivity.this, wrongQuestions, question -> {
                     Intent i = new Intent(WrongQuestionsListActivity.this, ReviewQuestionActivity.class);
-                    i.putExtra("questionId", question.id);
+                    i.putExtra("questionId", question.getId());
                     startActivity(i);
                 });
                 rvWrongQuestions.setAdapter(adapter);

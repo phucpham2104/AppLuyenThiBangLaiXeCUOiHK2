@@ -9,76 +9,39 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class WrongQuestionAdapter extends RecyclerView.Adapter<WrongQuestionAdapter.ViewHolder> {
 
-    private List<Question> wrongQuestions = new ArrayList<>();
-    private Context context;
-    private OnItemClickListener listener;
+    private final List<Question> wrongQuestions;
+    private final Context context;
+    private final OnItemClickListener listener;
 
+    // Interface callback để truyền Question ra ngoài
     public interface OnItemClickListener {
         void onItemClick(Question question);
     }
 
-    public WrongQuestionAdapter(Context context, OnItemClickListener listener) {
+    // Constructor nhận danh sách Question và listener
+    public WrongQuestionAdapter(Context context, List<Question> wrongQuestions, OnItemClickListener listener) {
         this.context = context;
+        this.wrongQuestions = wrongQuestions;
         this.listener = listener;
-        loadWrongQuestionsFromFirebase();
-    }
-
-    private void loadWrongQuestionsFromFirebase() {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                wrongQuestions.clear();
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    Boolean isFrequentlyWrong = child.child("isFrequentlyWrong").getValue(Boolean.class);
-                    if (isFrequentlyWrong != null && isFrequentlyWrong) {
-                        int id = child.child("id").getValue(Integer.class);
-                        String chapter = child.child("chapter").getValue(String.class);
-                        String questionText = child.child("question").getValue(String.class);
-                        List<String> optionsList = new ArrayList<>();
-                        for (DataSnapshot opt : child.child("options").getChildren()) {
-                            optionsList.add(opt.getValue(String.class));
-                        }
-                        String[] options = optionsList.toArray(new String[0]);
-                        int answer = child.child("answer").getValue(Integer.class);
-                        String tip = child.child("tip").getValue(String.class);
-
-                        Question q = new Question(id, chapter, questionText, options, answer, tip);
-                        wrongQuestions.add(q);
-                    }
-                }
-                notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                error.toException().printStackTrace();
-            }
-        });
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public WrongQuestionAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_question, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull WrongQuestionAdapter.ViewHolder holder, int position) {
         Question q = wrongQuestions.get(position);
         holder.tvQuestion.setText(q.question);
+
+        // Gọi callback khi click item
         holder.itemView.setOnClickListener(v -> listener.onItemClick(q));
     }
 
@@ -96,4 +59,3 @@ public class WrongQuestionAdapter extends RecyclerView.Adapter<WrongQuestionAdap
         }
     }
 }
-

@@ -2,8 +2,6 @@ package phuc.edu.banglaixe;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,7 +16,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-// ReviewActivity Firebase-enabled
 public class ReviewActivity extends AppCompatActivity {
 
     private RecyclerView rvChapters;
@@ -42,17 +39,18 @@ public class ReviewActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot snapshot) {
                 List<String> chapters = new ArrayList<>();
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    String chapter = child.child("chapter").getValue(String.class);
+                    String chapter = child.child("chapterId").getValue(String.class);
                     if (chapter != null && !chapters.contains(chapter)) {
                         chapters.add(chapter);
                     }
                 }
 
+                chapterList.clear();
                 chapterList.addAll(chapters);
 
                 ChapterAdapter adapter = new ChapterAdapter(chapterList, chapterId -> {
                     Intent i = new Intent(ReviewActivity.this, ReviewQuestionActivity.class);
-                    i.putExtra("chapterId", chapterId);
+                    i.putExtra("chapterId", chapterId);  // chapterId là String
                     startActivity(i);
                 });
                 rvChapters.setAdapter(adapter);

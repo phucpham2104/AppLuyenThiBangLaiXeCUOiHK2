@@ -61,7 +61,7 @@ public class DeadlyQuestionsActivity extends AppCompatActivity {
                             int answer = child.child("answer").getValue(Integer.class);
                             String explanation = child.child("explanation").getValue(String.class);
 
-                            Question q = new Question(id, chapter, questionText, options, answer, explanation);
+                            Question q = new Question(id, chapter, questionText, options, answer, explanation,"");
                             deadlyQuestions.add(q);
                         }
                     }

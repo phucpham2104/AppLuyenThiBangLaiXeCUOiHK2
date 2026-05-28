@@ -58,7 +58,11 @@ public class DeadlyQuestionsListActivity extends AppCompatActivity {
                         String examId = child.child("examId").getValue(String.class);
                         String tip = child.child("tip").getValue(String.class);
 
-                        Question q = new Question(id, chapterId, questionText, options, answer, explanation);
+                        String chapter = child.child("chapter").getValue(String.class); // match JSON
+                        String image = child.child("image").getValue(String.class);     // nếu JSON có image
+                        if (image == null) image = "";
+
+                        Question q = new Question(id, chapter, questionText, options, answer, explanation, image);
                         q.isDeadly = true;
                         q.isFrequentlyWrong = isFrequentlyWrong;
                         q.examId = examId != null ? examId : "";
