@@ -1,5 +1,13 @@
 package phuc.edu.banglaixe;
 
+import android.util.Log;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,22 +21,62 @@ public class QuestionRepository {
         void onError(String message);
     }
 
-    // Thí dụ đơn giản: load hardcode, sau này bạn có thể đổi sang load từ JSON
+    private static final int QUESTIONS_PER_EXAM = 25; // chia mỗi đề 25 câu
+
     public void loadAllQuestions(LoadCallback callback, ErrorCallback errorCallback) {
-        try {
-            List<Question> questions = new ArrayList<>();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions"); // giả sử JSON được lưu ở node "questions"
 
-            // Ví dụ 1 câu
-            questions.add(new Question(1, "all", "Hành vi nào sau đây bị nghiêm cấm?",
-                    new String[]{
-                            "Điều khiển xe lạng lách",
-                            "Chống đối người thi hành công vụ",
-                            "Cả hai"
-                    }, 2, "Theo luật GTĐB 2024"));
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                try {
+                    List<Question> allQuestions = new ArrayList<>();
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        int id = child.child("id").getValue(Integer.class);
+                        String chapter = child.child("chapter").getValue(String.class);
+                        String questionText = child.child("question").getValue(String.class);
+                        List<String> optionsList = new ArrayList<>();
+                        for (DataSnapshot opt : child.child("options").getChildren()) {
+                            optionsList.add(opt.getValue(String.class));
+                        }
+                        String[] options = optionsList.toArray(new String[0]);
+                        int answer = child.child("answer").getValue(Integer.class);
+                        String image = child.child("image").getValue(String.class);
 
-            callback.onLoaded(questions);
-        } catch (Exception e) {
-            errorCallback.onError(e.getMessage());
-        }
+                        Question q = new Question(id, chapter, questionText, options, answer, "");
+                        q.tip = ""; // có thể set tip nếu muốn
+                        q.examId = ""; // sẽ set bên dưới
+                        allQuestions.add(q);
+                    }
+
+                    // chia 5 đề
+                    List<Question> exam1 = new ArrayList<>();
+                    List<Question> exam2 = new ArrayList<>();
+                    List<Question> exam3 = new ArrayList<>();
+                    List<Question> exam4 = new ArrayList<>();
+                    List<Question> exam5 = new ArrayList<>();
+
+                    int count = 0;
+                    for (Question q : allQuestions) {
+                        count++;
+                        if (count <= QUESTIONS_PER_EXAM) q.examId = "exam1";
+                        else if (count <= 2 * QUESTIONS_PER_EXAM) q.examId = "exam2";
+                        else if (count <= 3 * QUESTIONS_PER_EXAM) q.examId = "exam3";
+                        else if (count <= 4 * QUESTIONS_PER_EXAM) q.examId = "exam4";
+                        else q.examId = "exam5";
+                    }
+
+                    callback.onLoaded(allQuestions);
+
+                } catch (Exception e) {
+                    errorCallback.onError(e.getMessage());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                errorCallback.onError(error.getMessage());
+            }
+        });
     }
 }

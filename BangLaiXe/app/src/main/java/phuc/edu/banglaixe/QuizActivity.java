@@ -1,6 +1,6 @@
 package phuc.edu.banglaixe;
 
-import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.widget.Button;
@@ -8,10 +8,21 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
+// QuizActivity Firebase-enabled
 public class QuizActivity extends AppCompatActivity {
 
     private TextView txtQuestionIndex, txtQuestion, txtTimer, txtTip;
@@ -43,24 +54,49 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void showBeginDialog() {
-        new AlertDialog.Builder(this)
+        new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Bài thi thử sát hạch lý thuyết lái xe hạng A1")
                 .setMessage("- Tổng số câu: 25 câu\n- Thời lượng làm bài: 19 phút\n- Số câu đúng tối thiểu: 21/25\n- Chú ý: Làm sai câu điểm liệt sẽ bị tính là trượt")
                 .setPositiveButton("BẮT ĐẦU LÀM BÀI", (dialog, which) -> {
-                    loadQuestions();
+                    loadQuestionsFromFirebase();
                     startTimer(19 * 60 * 1000);
                 })
                 .setCancelable(false)
                 .show();
     }
 
-    private void loadQuestions() {
-        new QuestionRepository().loadAllQuestions(list -> {
-            for (Question q : list) {
-                if (examId.equals(q.examId)) questions.add(q);
+    private void loadQuestionsFromFirebase() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    String qExamId = child.child("examId").getValue(String.class);
+                    if (qExamId != null && qExamId.equals(examId)) {
+                        int id = child.child("id").getValue(Integer.class);
+                        String chapter = child.child("chapter").getValue(String.class);
+                        String questionText = child.child("question").getValue(String.class);
+                        List<String> optionsList = new ArrayList<>();
+                        for (DataSnapshot opt : child.child("options").getChildren()) {
+                            optionsList.add(opt.getValue(String.class));
+                        }
+                        String[] options = optionsList.toArray(new String[0]);
+                        int answer = child.child("answer").getValue(Integer.class);
+                        String tip = child.child("tip").getValue(String.class);
+
+                        Question q = new Question(id, chapter, questionText, options, answer, tip);
+                        questions.add(q);
+                    }
+                }
+                if (!questions.isEmpty()) showQuestion();
+                else Toast.makeText(QuizActivity.this, "Không có câu hỏi cho đề này", Toast.LENGTH_LONG).show();
             }
-            if (!questions.isEmpty()) showQuestion();
-        }, message -> Toast.makeText(this, "Lỗi tải câu hỏi: " + message, Toast.LENGTH_LONG).show());
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Toast.makeText(QuizActivity.this, "Lỗi tải câu hỏi: " + error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void startTimer(long millis) {
@@ -95,7 +131,10 @@ public class QuizActivity extends AppCompatActivity {
         }
 
         rgOptions.setOnCheckedChangeListener((group, checkedId) -> {
-            saveAnswer(checkedId);
+            if (checkedId != q.answer) {
+                // TODO: lưu câu sai nếu muốn
+            }
+
             if (currentIndex < questions.size() - 1) {
                 currentIndex++;
                 showQuestion();
@@ -117,12 +156,5 @@ public class QuizActivity extends AppCompatActivity {
                 showQuestion();
             }
         });
-    }
-
-    private void saveAnswer(int selectedId) {
-        Question q = questions.get(currentIndex);
-        if (selectedId != q.answer) {
-            // TODO: lưu câu sai
-        }
     }
 }

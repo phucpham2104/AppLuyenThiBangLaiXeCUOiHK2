@@ -7,99 +7,164 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center">
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Chọn đề thi"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:paddingBottom="16dp"/>
 
-        <GridLayout
-            android:id="@+id/gridExams"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="3"
-            android:rowCount="4"
-            android:alignmentMode="alignMargins"
-            android:useDefaultMargins="true">
+            android:weightSum="3"
+            android:paddingBottom="8dp">
 
-            <!-- Ngẫu nhiên -->
             <LinearLayout
-                android:id="@+id/btnRandom"
+                android:id="@+id/btnExam1"
                 android:orientation="vertical"
-                android:gravity="center"
+                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
-                android:layout_columnWeight="1"
+                android:gravity="center"
                 android:background="@android:color/white"
-                android:elevation="2dp"
                 android:padding="8dp"
-                android:clickable="true"
-                android:focusable="true">
+                android:elevation="2dp">
 
                 <ImageView
+                    android:id="@+id/imgExamIcon1"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:src="@drawable/ic_shuffle_green"/>
 
                 <TextView
-                    android:text="NGẪU NHIÊN"
-                    android:textColor="#4CAF50"
-                    android:textSize="14sp"
-                    android:paddingTop="4dp"
+                    android:id="@+id/txtExamTitle1"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
-
-            <!-- Đề thi số 1 -->
-            <LinearLayout
-                android:id="@+id/btnExam1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_columnWeight="1"
-                android:background="@android:color/white"
-                android:elevation="2dp"
-                android:padding="8dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <TextView
-                    android:text="Đề thi số 1"
+                    android:layout_height="wrap_content"
+                    android:text="Ngẫu nhiên"
                     android:textColor="#000000"
                     android:textSize="14sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:paddingTop="4dp"/>
             </LinearLayout>
 
-            <!-- Đề thi số 2 -->
             <LinearLayout
                 android:id="@+id/btnExam2"
                 android:orientation="vertical"
-                android:gravity="center"
+                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
-                android:layout_columnWeight="1"
+                android:gravity="center"
                 android:background="@android:color/white"
-                android:elevation="2dp"
                 android:padding="8dp"
-                android:clickable="true"
-                android:focusable="true">
+                android:elevation="2dp">
 
                 <TextView
+                    android:id="@+id/txtExamTitle2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Đề thi số 1"
+                    android:textColor="#000000"
+                    android:textSize="14sp"
+                    android:paddingTop="4dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnExam3"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:gravity="center"
+                android:background="@android:color/white"
+                android:padding="8dp"
+                android:elevation="2dp">
+
+                <TextView
+                    android:id="@+id/txtExamTitle3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Đề thi số 2"
                     android:textColor="#000000"
                     android:textSize="14sp"
+                    android:paddingTop="4dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="3"
+            android:paddingBottom="8dp">
+
+            <LinearLayout
+                android:id="@+id/btnExam4"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:gravity="center"
+                android:background="@android:color/white"
+                android:padding="8dp"
+                android:elevation="2dp">
+
+                <TextView
+                    android:id="@+id/txtExamTitle4"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:text="Đề thi số 3"
+                    android:textColor="#000000"
+                    android:textSize="14sp"
+                    android:paddingTop="4dp"/>
             </LinearLayout>
 
-            <!-- Thêm các đề 3-10 tương tự -->
-        </GridLayout>
+            <LinearLayout
+                android:id="@+id/btnExam5"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:gravity="center"
+                android:background="@android:color/white"
+                android:padding="8dp"
+                android:elevation="2dp">
+
+                <TextView
+                    android:id="@+id/txtExamTitle5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Đề thi số 4"
+                    android:textColor="#000000"
+                    android:textSize="14sp"
+                    android:paddingTop="4dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnExam6"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:gravity="center"
+                android:background="@android:color/white"
+                android:padding="8dp"
+                android:elevation="2dp">
+
+                <TextView
+                    android:id="@+id/txtExamTitle6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Đề thi số 5"
+                    android:textColor="#000000"
+                    android:textSize="14sp"
+                    android:paddingTop="4dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>

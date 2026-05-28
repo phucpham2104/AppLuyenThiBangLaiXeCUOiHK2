@@ -2,17 +2,27 @@ package phuc.edu.banglaixe;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
+// ReviewActivity Firebase-enabled
 public class ReviewActivity extends AppCompatActivity {
 
     private RecyclerView rvChapters;
+    private List<String> chapterList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,20 +32,36 @@ public class ReviewActivity extends AppCompatActivity {
         rvChapters = findViewById(R.id.rvChapters);
         rvChapters.setLayoutManager(new LinearLayoutManager(this));
 
-        List<String> chapterList = new ArrayList<>();
-        chapterList.add("Toàn bộ câu hỏi");
-        chapterList.add("Quy định chung và quy tắc giao thông đường bộ");
-        chapterList.add("Văn hóa giao thông, đạo đức người lái xe, kỹ năng phòng cháy");
-        chapterList.add("Kỹ thuật lái xe");
-        chapterList.add("Báo hiệu đường bộ");
+        loadChaptersFromFirebase();
+    }
 
-        ChapterAdapter adapter = new ChapterAdapter(chapterList, chapterId -> {
-            Intent i = new Intent(ReviewActivity.this, QuizActivity.class);
-            i.putExtra("chapterId", chapterId);
-            i.putExtra("isReviewMode", true); // để QuizActivity biết là ôn tập, không tính thời gian
-            startActivity(i);
+    private void loadChaptersFromFirebase() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                List<String> chapters = new ArrayList<>();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    String chapter = child.child("chapter").getValue(String.class);
+                    if (chapter != null && !chapters.contains(chapter)) {
+                        chapters.add(chapter);
+                    }
+                }
+
+                chapterList.addAll(chapters);
+
+                ChapterAdapter adapter = new ChapterAdapter(chapterList, chapterId -> {
+                    Intent i = new Intent(ReviewActivity.this, ReviewQuestionActivity.class);
+                    i.putExtra("chapterId", chapterId);
+                    startActivity(i);
+                });
+                rvChapters.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                error.toException().printStackTrace();
+            }
         });
-
-        rvChapters.setAdapter(adapter);
     }
 }

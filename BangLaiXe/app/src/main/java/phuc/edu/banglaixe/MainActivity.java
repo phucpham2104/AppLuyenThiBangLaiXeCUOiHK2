@@ -1,9 +1,10 @@
+// MainActivity.java Firebase-enabled
 package phuc.edu.banglaixe;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.LinearLayout;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnCritical.setOnClickListener(v -> {
-            Intent i = new Intent(MainActivity.this, DeadlyQuestionsActivity.class);
+            Intent i = new Intent(MainActivity.this, DeadlyQuestionsListActivity.class);
             startActivity(i);
         });
     }

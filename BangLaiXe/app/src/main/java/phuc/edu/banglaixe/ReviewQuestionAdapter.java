@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,9 +19,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WrongQuestionAdapter extends RecyclerView.Adapter<WrongQuestionAdapter.ViewHolder> {
+// ReviewQuestionAdapter Firebase-enabled
+public class ReviewQuestionAdapter extends RecyclerView.Adapter<ReviewQuestionAdapter.ViewHolder> {
 
-    private List<Question> wrongQuestions = new ArrayList<>();
+    private List<Question> questions = new ArrayList<>();
     private Context context;
     private OnItemClickListener listener;
 
@@ -28,23 +30,22 @@ public class WrongQuestionAdapter extends RecyclerView.Adapter<WrongQuestionAdap
         void onItemClick(Question question);
     }
 
-    public WrongQuestionAdapter(Context context, OnItemClickListener listener) {
+    public ReviewQuestionAdapter(Context context, String chapterId, OnItemClickListener listener) {
         this.context = context;
         this.listener = listener;
-        loadWrongQuestionsFromFirebase();
+        loadQuestionsFromFirebase(chapterId);
     }
 
-    private void loadWrongQuestionsFromFirebase() {
+    private void loadQuestionsFromFirebase(String chapterId) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                wrongQuestions.clear();
+                questions.clear();
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    Boolean isFrequentlyWrong = child.child("isFrequentlyWrong").getValue(Boolean.class);
-                    if (isFrequentlyWrong != null && isFrequentlyWrong) {
+                    String qChapter = child.child("chapter").getValue(String.class);
+                    if (qChapter != null && qChapter.equals(chapterId)) {
                         int id = child.child("id").getValue(Integer.class);
-                        String chapter = child.child("chapter").getValue(String.class);
                         String questionText = child.child("question").getValue(String.class);
                         List<String> optionsList = new ArrayList<>();
                         for (DataSnapshot opt : child.child("options").getChildren()) {
@@ -52,10 +53,10 @@ public class WrongQuestionAdapter extends RecyclerView.Adapter<WrongQuestionAdap
                         }
                         String[] options = optionsList.toArray(new String[0]);
                         int answer = child.child("answer").getValue(Integer.class);
-                        String tip = child.child("tip").getValue(String.class);
+                        String image = child.child("image").getValue(String.class);
 
-                        Question q = new Question(id, chapter, questionText, options, answer, tip);
-                        wrongQuestions.add(q);
+                        Question q = new Question(id, qChapter, questionText, options, answer, image);
+                        questions.add(q);
                     }
                 }
                 notifyDataSetChanged();
@@ -77,23 +78,24 @@ public class WrongQuestionAdapter extends RecyclerView.Adapter<WrongQuestionAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Question q = wrongQuestions.get(position);
+        Question q = questions.get(position);
         holder.tvQuestion.setText(q.question);
         holder.itemView.setOnClickListener(v -> listener.onItemClick(q));
     }
 
     @Override
     public int getItemCount() {
-        return wrongQuestions.size();
+        return questions.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvQuestion;
+        ImageView ivImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvQuestion = itemView.findViewById(R.id.tvQuestion);
+            ivImage = itemView.findViewById(R.id.ivImage);
         }
     }
 }
-

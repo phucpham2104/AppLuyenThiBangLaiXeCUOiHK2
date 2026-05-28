@@ -3,9 +3,16 @@ package phuc.edu.banglaixe;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,23 +30,56 @@ public class DeadlyQuestionsListActivity extends AppCompatActivity {
         rvDeadlyQuestions = findViewById(R.id.rvDeadlyQuestions);
         rvDeadlyQuestions.setLayoutManager(new LinearLayoutManager(this));
 
-        loadDeadlyQuestions();
+        loadDeadlyQuestionsFromFirebase();
     }
 
-    private void loadDeadlyQuestions() {
-        new QuestionRepository().loadAllQuestions(list -> {
-            for (Question q : list) {
-                if (q.isDeadly) deadlyQuestions.add(q);
+    private void loadDeadlyQuestionsFromFirebase() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                deadlyQuestions.clear();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Boolean isDeadly = child.child("isDeadly").getValue(Boolean.class);
+                    if (isDeadly != null && isDeadly) {
+                        int id = child.child("id").getValue(Integer.class);
+                        String chapterId = child.child("chapterId").getValue(String.class);
+                        String questionText = child.child("question").getValue(String.class);
+
+                        List<String> optionsList = new ArrayList<>();
+                        for (DataSnapshot opt : child.child("options").getChildren()) {
+                            optionsList.add(opt.getValue(String.class));
+                        }
+                        String[] options = optionsList.toArray(new String[0]);
+
+                        int answer = child.child("answer").getValue(Integer.class);
+                        String explanation = child.child("explanation").getValue(String.class);
+                        boolean isFrequentlyWrong = child.child("isFrequentlyWrong").getValue(Boolean.class) != null ? child.child("isFrequentlyWrong").getValue(Boolean.class) : false;
+                        String examId = child.child("examId").getValue(String.class);
+                        String tip = child.child("tip").getValue(String.class);
+
+                        Question q = new Question(id, chapterId, questionText, options, answer, explanation);
+                        q.isDeadly = true;
+                        q.isFrequentlyWrong = isFrequentlyWrong;
+                        q.examId = examId != null ? examId : "";
+                        q.tip = tip;
+
+                        deadlyQuestions.add(q);
+                    }
+                }
+
+                DeadlyQuestionAdapter adapter = new DeadlyQuestionAdapter(DeadlyQuestionsListActivity.this, deadlyQuestions, question -> {
+                    Intent i = new Intent(DeadlyQuestionsListActivity.this, ReviewQuestionActivity.class);
+                    i.putExtra("questionId", question.getId());
+                    startActivity(i);
+                });
+                rvDeadlyQuestions.setAdapter(adapter);
             }
-            DeadlyQuestionAdapter adapter = new DeadlyQuestionAdapter(deadlyQuestions, question -> {
-                // Mở ReviewQuestionActivity cho câu được click
-                Intent i = new Intent(DeadlyQuestionsListActivity.this, ReviewQuestionActivity.class);
-                i.putExtra("questionId", question.id);
-                startActivity(i);
-            });
-            rvDeadlyQuestions.setAdapter(adapter);
-        }, message -> {
-            // lỗi tải dữ liệu
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                error.toException().printStackTrace();
+            }
         });
     }
 }

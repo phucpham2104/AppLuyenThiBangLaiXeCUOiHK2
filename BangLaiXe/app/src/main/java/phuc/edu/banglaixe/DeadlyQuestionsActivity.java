@@ -5,9 +5,14 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,18 +38,43 @@ public class DeadlyQuestionsActivity extends AppCompatActivity {
         btnNext = findViewById(R.id.btnNext);
         btnPrev = findViewById(R.id.btnPrev);
 
-        loadDeadlyQuestions();
+        loadDeadlyQuestionsFromFirebase();
     }
 
-    private void loadDeadlyQuestions() {
-        new QuestionRepository().loadAllQuestions(list -> {
-            // Lọc ra 20 câu điểm liệt
-            for (Question q : list) {
-                if (q.isDeadly) deadlyQuestions.add(q);
+    private void loadDeadlyQuestionsFromFirebase() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                try {
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        Boolean isDeadly = child.child("isDeadly").getValue(Boolean.class);
+                        if (isDeadly != null && isDeadly) {
+                            int id = child.child("id").getValue(Integer.class);
+                            String chapter = child.child("chapter").getValue(String.class);
+                            String questionText = child.child("question").getValue(String.class);
+                            List<String> optionsList = new ArrayList<>();
+                            for (DataSnapshot opt : child.child("options").getChildren()) {
+                                optionsList.add(opt.getValue(String.class));
+                            }
+                            String[] options = optionsList.toArray(new String[0]);
+                            int answer = child.child("answer").getValue(Integer.class);
+                            String explanation = child.child("explanation").getValue(String.class);
+
+                            Question q = new Question(id, chapter, questionText, options, answer, explanation);
+                            deadlyQuestions.add(q);
+                        }
+                    }
+                    if (!deadlyQuestions.isEmpty()) showQuestion();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            if (!deadlyQuestions.isEmpty()) showQuestion();
-        }, message -> {
-            // lỗi tải
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                error.toException().printStackTrace();
+            }
         });
     }
 
@@ -52,7 +82,7 @@ public class DeadlyQuestionsActivity extends AppCompatActivity {
         Question q = deadlyQuestions.get(currentIndex);
         txtQuestionIndex.setText("Câu " + (currentIndex + 1) + "/" + deadlyQuestions.size());
         txtQuestion.setText(q.question);
-        txtExplanation.setVisibility(View.GONE);
+        txtExplanation.setVisibility(android.view.View.GONE);
 
         rgOptions.removeAllViews();
         for (int i = 0; i < q.options.length; i++) {

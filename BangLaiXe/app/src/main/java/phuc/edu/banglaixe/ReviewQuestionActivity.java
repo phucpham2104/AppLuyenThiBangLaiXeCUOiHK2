@@ -1,7 +1,7 @@
 package phuc.edu.banglaixe;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -9,9 +9,16 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
+// ReviewQuestionActivity Firebase-enabled
 public class ReviewQuestionActivity extends AppCompatActivity {
 
     private TextView txtQuestionIndex, txtQuestion, txtExplanation;
@@ -36,19 +43,39 @@ public class ReviewQuestionActivity extends AppCompatActivity {
 
         chapterId = getIntent().getStringExtra("chapterId");
 
-        loadQuestions();
+        loadQuestionsFromFirebase();
     }
 
-    private void loadQuestions() {
-        new QuestionRepository().loadAllQuestions(list -> {
-            for (Question q : list) {
-                if (chapterId.equals(q.chapterId) || chapterId.equals("all")) {
-                    questions.add(q);
+    private void loadQuestionsFromFirebase() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    String qChapter = child.child("chapter").getValue(String.class);
+                    if (qChapter != null && (qChapter.equals(chapterId) || chapterId.equals("all"))) {
+                        int id = child.child("id").getValue(Integer.class);
+                        String questionText = child.child("question").getValue(String.class);
+                        List<String> optionsList = new ArrayList<>();
+                        for (DataSnapshot opt : child.child("options").getChildren()) {
+                            optionsList.add(opt.getValue(String.class));
+                        }
+                        String[] options = optionsList.toArray(new String[0]);
+                        int answer = child.child("answer").getValue(Integer.class);
+                        String explanation = child.child("explanation").getValue(String.class);
+
+                        Question q = new Question(id, qChapter, questionText, options, answer, explanation);
+                        questions.add(q);
+                    }
                 }
+
+                if (!questions.isEmpty()) showQuestion();
             }
-            if (!questions.isEmpty()) showQuestion();
-        }, message -> {
-            // lỗi tải
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                error.toException().printStackTrace();
+            }
         });
     }
 
@@ -56,7 +83,7 @@ public class ReviewQuestionActivity extends AppCompatActivity {
         Question q = questions.get(currentIndex);
         txtQuestionIndex.setText("Câu " + (currentIndex + 1) + "/" + questions.size());
         txtQuestion.setText(q.question);
-        txtExplanation.setVisibility(View.GONE);
+        txtExplanation.setVisibility(android.view.View.GONE);
 
         rgOptions.removeAllViews();
         for (int i = 0; i < q.options.length; i++) {
@@ -75,7 +102,7 @@ public class ReviewQuestionActivity extends AppCompatActivity {
             }
 
             txtExplanation.setText(q.explanation);
-            txtExplanation.setVisibility(View.VISIBLE);
+            txtExplanation.setVisibility(android.view.View.VISIBLE);
         });
 
         btnPrev.setOnClickListener(v -> {
