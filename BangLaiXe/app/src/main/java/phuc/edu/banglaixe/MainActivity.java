@@ -33,12 +33,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btn50Wrong.setOnClickListener(v -> {
-            Intent i = new Intent(MainActivity.this, WrongQuestionsActivity.class);
+            Intent i = new Intent(MainActivity.this, WrongQuestionsListActivity.class);
             startActivity(i);
         });
 
         btnCritical.setOnClickListener(v -> {
-            Intent i = new Intent(MainActivity.this, CriticalQuestionsActivity.class);
+            Intent i = new Intent(MainActivity.this, DeadlyQuestionsActivity.class);
             startActivity(i);
         });
     }
