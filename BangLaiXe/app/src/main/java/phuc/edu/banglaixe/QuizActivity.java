@@ -1,6 +1,5 @@
 package phuc.edu.banglaixe;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.widget.Button;
@@ -10,19 +9,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
-// QuizActivity Firebase-enabled
 public class QuizActivity extends AppCompatActivity {
 
     private TextView txtQuestionIndex, txtQuestion, txtTimer, txtTip;
@@ -67,9 +62,10 @@ public class QuizActivity extends AppCompatActivity {
 
     private void loadQuestionsFromFirebase() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+                questions.clear();
                 for (DataSnapshot child : snapshot.getChildren()) {
                     String qExamId = child.child("examId").getValue(String.class);
                     if (qExamId != null && qExamId.equals(examId)) {
@@ -82,12 +78,19 @@ public class QuizActivity extends AppCompatActivity {
                         }
                         String[] options = optionsList.toArray(new String[0]);
                         int answer = child.child("answer").getValue(Integer.class);
+                        String explanation = child.child("explanation").getValue(String.class);
                         String tip = child.child("tip").getValue(String.class);
+                        String image = child.child("image").getValue(String.class);
 
-                        Question q = new Question(id, chapter, questionText, options, answer, tip);
+                        Question q = new Question(id, chapter, questionText, options, answer,
+                                explanation != null ? explanation : "",
+                                image != null ? image : "");
+                        q.setTip(tip != null ? tip : "");
+
                         questions.add(q);
                     }
                 }
+
                 if (!questions.isEmpty()) showQuestion();
                 else Toast.makeText(QuizActivity.this, "Không có câu hỏi cho đề này", Toast.LENGTH_LONG).show();
             }
@@ -120,7 +123,7 @@ public class QuizActivity extends AppCompatActivity {
         Question q = questions.get(currentIndex);
         txtQuestionIndex.setText((currentIndex + 1) + "/" + questions.size());
         txtQuestion.setText(q.question);
-        txtTip.setText(q.tip != null ? q.tip : "");
+        txtTip.setText(q.getTip());
 
         rgOptions.removeAllViews();
         for (int i = 0; i < q.options.length; i++) {

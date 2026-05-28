@@ -54,7 +54,12 @@ public class WrongQuestionsListActivity extends AppCompatActivity {
                         int answer = child.child("answer").getValue(Integer.class);
                         String tip = child.child("tip").getValue(String.class);
 
-                        Question q = new Question(id, chapter, questionText, options, answer, tip);
+                        String explanation = ""; // hoặc lấy từ Firebase nếu có
+                        String image = ""; // hoặc lấy từ Firebase nếu có
+
+                        Question q = new Question(id, chapter, questionText, options, answer,
+                                explanation, image);
+                        q.setTip(tip != null ? tip : "");
                         wrongQuestions.add(q);
                     }
                 }

@@ -55,7 +55,12 @@ public class ReviewQuestionAdapter extends RecyclerView.Adapter<ReviewQuestionAd
                         int answer = child.child("answer").getValue(Integer.class);
                         String image = child.child("image").getValue(String.class);
 
-                        Question q = new Question(id, qChapter, questionText, options, answer, image);
+                        String explanation = child.child("explanation").getValue(String.class);
+                        if (explanation == null) explanation = "";
+
+                        String img = image != null ? image : "";
+
+                        Question q = new Question(id, qChapter, questionText, options, answer, explanation, img);
                         questions.add(q);
                     }
                 }

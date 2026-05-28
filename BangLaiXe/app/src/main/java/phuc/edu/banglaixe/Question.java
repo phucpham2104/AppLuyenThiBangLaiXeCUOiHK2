@@ -3,12 +3,12 @@ package phuc.edu.banglaixe;
 public class Question {
 
     public int id;
-    public String chapter;         // match JSON field "chapter"
+    public String chapter;
     public String question;
     public String[] options;
     public int answer;
     public String explanation;
-    public String image;           // match JSON field "image"
+    public String image;
     public boolean isDeadly;
     public boolean isFrequentlyWrong;
     public String examId;
@@ -17,7 +17,7 @@ public class Question {
     // Constructor mặc định cần cho Firebase
     public Question() {}
 
-    // Constructor chính
+    // Constructor đầy đủ 7 tham số
     public Question(int id, String chapter, String question, String[] options, int answer,
                     String explanation, String image) {
         this.id = id;
@@ -31,6 +31,11 @@ public class Question {
         this.isFrequentlyWrong = false;
         this.examId = "";
         this.tip = null;
+    }
+
+    // Constructor 6 tham số cũ để tương thích code trước
+    public Question(int id, String chapter, String question, String[] options, int answer, String explanation) {
+        this(id, chapter, question, options, answer, explanation, "");
     }
 
     // Getter / Setter

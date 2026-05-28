@@ -64,7 +64,10 @@ public class ReviewQuestionActivity extends AppCompatActivity {
                         int answer = child.child("answer").getValue(Integer.class);
                         String explanation = child.child("explanation").getValue(String.class);
 
-                        Question q = new Question(id, qChapter, questionText, options, answer, explanation);
+                        String image = child.child("image").getValue(String.class);
+                        if (image == null) image = "";
+
+                        Question q = new Question(id, qChapter, questionText, options, answer, explanation != null ? explanation : "", image);
                         questions.add(q);
                     }
                 }
