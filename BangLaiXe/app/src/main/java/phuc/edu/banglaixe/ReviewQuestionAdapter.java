@@ -95,12 +95,10 @@ public class ReviewQuestionAdapter extends RecyclerView.Adapter<ReviewQuestionAd
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvQuestion;
-        ImageView ivImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvQuestion = itemView.findViewById(R.id.tvQuestion);
-            ivImage = itemView.findViewById(R.id.ivImage);
         }
     }
 }
